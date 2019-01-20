@@ -1,41 +1,24 @@
 require("./config/config.js");
 
 const express = require('express');
+const mongoose = require('mongoose');
 const app = express();
-
+//Body parse se usa para poder manipular de mejor 
+//forma los parámetros de las peticiones
 const bodyParser = require('body-parser');
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
 
-app.get('/usuario', ( req, res ) => {
-    res.json("get usuario");
-})
+//Importar y usar las rutas
+app.use( require('./routes/usuario') );
 
-app.post('/usuario', ( req, res ) => {
-    let body = req.body;
-    res.json({
-        persona: body
-    });
-})
-
-app.put('/usuario', ( req, res ) => {
-    res.json("put usuario");
-})
-
-app.put('/usuario/:id', ( req, res ) => {
-    let id = req.params.id;
-    res.json({
-        id
-    });
-})
-
-app.delete('/usuario', ( req, res ) => {
-    res.json("delete usuario");
-})
-
-
+//urlDB es una variable de entorno que creo en el config.js
+mongoose.connect(process.env.URLDB ,{ useNewUrlParser: true }, ( e, res ) => {
+    if(e) throw new Error(" Opps! :(");
+    console.log("Conexion: On line :)");
+});
 
 app.listen(process.env.PORT, () => {
     console.log("Escuchando desde el puerto ", process.env.PORT);
