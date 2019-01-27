@@ -11,15 +11,15 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
 
-//Importar y usar las rutas
-app.use( require('./routes/usuario') );
+//Importar configuracion global de rutas y usarlas
+app.use( require('./routes/index') );
 
 //urlDB es una variable de entorno que creo en el config.js
 mongoose.connect(process.env.URLDB ,{ useNewUrlParser: true }, ( e, res ) => {
     if(e) throw new Error(" Opps! :(");
     console.log("Conexion: On line :)");
 });
-
+//Escucho el puerto del servidor
 app.listen(process.env.PORT, () => {
     console.log("Escuchando desde el puerto ", process.env.PORT);
 });

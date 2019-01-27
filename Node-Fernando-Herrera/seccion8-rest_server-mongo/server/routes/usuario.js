@@ -3,15 +3,17 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 //herramienta para ciclos, objetos, arrays etc..
 const _ = require('underscore');
-
 //Importo el modelo de usuarios para usarlo al momento en el que se hacen las peticiones rest
 const modeloUsuario = require('../models/usuario');
 const UsuarioModel = modeloUsuario.model;
 let UsuarioDto = modeloUsuario.dto;
+//importo el archivo en donde tengo el middleware para validar los tokens
+const { verificarToken, verificarRolAdmin } = require('../middlewares/autenticacion');
+
 
 const app = express();
-
-app.get('/usuario', ( req, res ) => {
+//En esta peticion se usara un middleware llamado verificarToken
+app.get('/usuario', verificarToken, ( req, res ) => {
     //desde funciona para indicar desde qué registro quiero visualizar.
     //Por defecto es desde el registro 0
     let desde = req.query.desde || 0;
@@ -48,8 +50,8 @@ app.get('/usuario', ( req, res ) => {
 
                 
 })
-
-app.post('/usuario', ( req, res ) => {
+//[verificarToken, verificarRolAdmin] de est amanera se indica que haga dos middleware
+app.post('/usuario', [verificarToken, verificarRolAdmin], ( req, res ) => {
     let body = req.body;
     //De esta manera creo un nuevo objeto con el modelo que quiera usar. En este caso es el modelo de Usuario 
     let usuarioModel = new UsuarioModel({
@@ -75,6 +77,7 @@ app.post('/usuario', ( req, res ) => {
         usuarioDto.estado = usuarioDb.estado;
         usuarioDto.role = usuarioDb.role;
         usuarioDto.google = usuarioDb.google;
+        usuarioDto.id = usuarioDb._id
         
         res.json({
             ok: true,
@@ -85,11 +88,7 @@ app.post('/usuario', ( req, res ) => {
     
 })
 
-app.put('/usuario', ( req, res ) => {
-    res.json("put usuario");
-})
-
-app.put('/usuario/:id', ( req, res ) => {
+app.put('/usuario/:id', [verificarToken, verificarRolAdmin], ( req, res ) => {
     let id = req.params.id;
     //uso el metodo _pick para crear un objeto solo con las propiedades que yo quiero mandar a actualizar a partir del body 
     let body = _.pick(req.body, ['nombre','email','img','role','estado']);
@@ -113,7 +112,7 @@ app.put('/usuario/:id', ( req, res ) => {
 
 })
 
-app.delete('/usuario/:id', ( req, res ) => {
+app.delete('/usuario/:id', [verificarToken, verificarRolAdmin], ( req, res ) => {
     //Capturo el id enviado por url
    let id = req.params.id;
 

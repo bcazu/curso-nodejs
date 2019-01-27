@@ -48,15 +48,24 @@ let usuarioModel = new Schema({
         default: false
     }
 });
+
+usuarioModel.methods.toJson = function(){
+    let user = this;
+    let userObject =  user.toObject();
+    delete userObject.password;
+    return userObject;
+}
+
 //este modelo es con el que voy a responderle al usuario una vez haya guardado. Muy similar a la estructura model y dto que se maneja en JAVA
 let usuarioDto = {
+    id: null,
     nombre: 'nombre',
     email: 'email',
     img: 'img',
     role: 'role',
     estado: 'estado',
     google: 'google',
-    
+
 };
 
 //Se debe asignarle el pugin al modelo que lo usará
