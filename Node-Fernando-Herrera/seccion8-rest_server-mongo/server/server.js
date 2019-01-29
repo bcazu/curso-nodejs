@@ -2,6 +2,7 @@ require("./config/config.js");
 
 const express = require('express');
 const mongoose = require('mongoose');
+const path = require('path');
 const app = express();
 //Body parse se usa para poder manipular de mejor 
 //forma los parámetros de las peticiones
@@ -10,6 +11,8 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
+//habilitar carpeta public
+app.use( express.static( path.resolve(__dirname , '../public' ) ) );   
 
 //Importar configuracion global de rutas y usarlas
 app.use( require('./routes/index') );
